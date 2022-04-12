@@ -5,17 +5,17 @@ import { ProductsService } from "./product.service";
 export class ProductsController {
     constructor(private readonly productsService: ProductsService) {}
     @Post()
-    addProduct(
+    async addProduct(
         @Body('title') prodTitle: string, 
         @Body('description') prodDescription: string, 
-        @Body('price') prodPrice: number): {id: string} {
-        const generatedId = this.productsService.insertProduct(prodTitle, prodDescription, prodPrice);
+        @Body('price') prodPrice: number) {
+        const generatedId = await this.productsService.insertProduct(prodTitle, prodDescription, prodPrice);
         return {id: generatedId}
     }
 
     @Get()
-    getAllProducts(): Array<Object> {
-        const products = this.productsService.fetchAllProducts();
+    async getAllProducts(){
+        const products = await this.productsService.fetchAllProducts();
         return products;
     }
 
