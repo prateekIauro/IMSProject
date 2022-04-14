@@ -1,14 +1,16 @@
 import { Module } from "@nestjs/common";
-import { MongooseModule } from "@nestjs/mongoose";
 
 import { ProductsController } from "./product.controller";
-import { ProductSchema } from "./product.model";
+import { productProviders } from "./product.providers";
 import { ProductsService } from "./product.service";
 
 
 @Module({
-    imports: [MongooseModule.forFeature([{name: 'Product', schema: ProductSchema}])],
+    imports: [],
     controllers: [ProductsController],
-    providers: [ProductsService]
+    providers: [
+        ProductsService,
+        ...productProviders
+    ]
 })
 export class ProductModule {}

@@ -1,6 +1,8 @@
 import { Controller, Body, Post, Get, Patch, Delete, Param } from "@nestjs/common";
 import { ProductsService } from "./product.service";
-import { CreateProductDto } from "./create-product.dto";
+import { CreateProductDto } from "./dtos/create-product.dto";
+import { UpdateProductDto } from "./dtos/update-product.dto";
+import { Product } from "./interfaces/product.interface";
 
 @Controller('/products')
 export class ProductsController {
@@ -8,37 +10,36 @@ export class ProductsController {
     @Post()
     async addProduct(
         @Body() createProductDto: CreateProductDto,
-    ) {
-        const generatedId = await this.productsService.insertProduct(createProductDto.title, createProductDto.description, createProductDto.price);
-        return {id: generatedId}
+    ): Promise<{id: string}> {
+        const savedProductId = await this.productsService.insertProduct(createProductDto);
+        return {id: savedProductId}
     }
 
     @Get()
-    async getAllProducts(){
+    async getAllProducts(): Promise<Product[]>{
         const products = await this.productsService.fetchAllProducts();
         return products;
     }
 
     @Get(':id')
-    getProductById(@Param('id') prodId: string): any {
-        const product = this.productsService.fetchProductById(prodId);
+    async getProductById(@Param('id') prodId: string): Promise<Product> {
+        const product = await this.productsService.fetchProductById(prodId);
         return product;
     }
 
     @Patch(':id')
-    updateProduct(
+    async updateProduct(
         @Param('id') prodId: string, 
-        @Body('title') prodTitle: string, 
-        @Body('description') prodDescription: string, 
-        @Body('price') prodPrice: number
-    ): {id: string}{
-        const updatedProductId = this.productsService.updateProduct(prodId, prodTitle, prodDescription, prodPrice);
+        @Body() updatedProductDto: UpdateProductDto,
+
+    ): Promise<{id: string}>{
+        const updatedProductId = await this.productsService.updateProduct(prodId, updatedProductDto);
         return {id: updatedProductId}
     }
 
     @Delete(':id')
-    deleteProduct(@Param('id') productId: string): {id: string} {
-        const deletedProductId = this.productsService.removeProduct(productId);
+    async deleteProduct(@Param('id') productId: string): Promise<{id: string}> {
+        const deletedProductId = await this.productsService.removeProduct(productId);
         return {id: productId};       
     }
 }
